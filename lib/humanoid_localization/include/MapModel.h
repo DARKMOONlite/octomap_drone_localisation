@@ -30,7 +30,7 @@
 #include <octomap_msgs/GetOctomap.h>
 #include <octomap_ros/conversions.h>
 
-#include <humanoid_localization/humanoid_localization_defs.h>
+#include <humanoid_localization_defs.h>
 
 namespace humanoid_localization{
 

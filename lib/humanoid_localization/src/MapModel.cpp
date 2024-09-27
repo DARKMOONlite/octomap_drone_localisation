@@ -21,7 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <humanoid_localization/MapModel.h>
+#include <MapModel.h>
 
 namespace humanoid_localization{
 MapModel::MapModel(ros::NodeHandle* nh)

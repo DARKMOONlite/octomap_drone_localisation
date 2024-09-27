@@ -16,6 +16,9 @@ DroneLocalisationNode::DroneLocalisationNode()
 }
 
 
+DroneLocalisationNode::~DroneLocalisationNode()
+{
+}
 
 
 

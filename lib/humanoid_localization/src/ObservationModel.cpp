@@ -21,7 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <humanoid_localization/ObservationModel.h>
+#include <ObservationModel.h>
 
 using namespace std;
 using namespace tf;

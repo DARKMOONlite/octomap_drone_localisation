@@ -33,8 +33,8 @@
 #include <tf/transform_datatypes.h>
 #include <pcl_ros/transforms.h>
 
-#include <humanoid_localization/humanoid_localization_defs.h>
-#include <humanoid_localization/MapModel.h>
+#include <humanoid_localization_defs.h>
+#include <MapModel.h>
 #include <octomap/octomap.h>
 
 #include <sensor_msgs/PointCloud2.h>

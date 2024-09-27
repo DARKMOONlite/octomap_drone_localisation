@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <humanoid_localization/RaycastingModel.h>
+#include <RaycastingModel.h>
 
 #include <pcl/point_types.h>
 #include <pcl/conversions.h>

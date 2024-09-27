@@ -9,26 +9,23 @@ add_compile_options(-std=c++14)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 
-find_package(OpenCV REQUIRED)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
-  libavcodec
-  libavformat
-  libavutil
-  libswscale
-  libavdevice
-  libavfilter
-  libavresample
-)
 
-message(STATUS "LIBAV includes: ${LIBAV_INCLUDE_DIRS}")
 
 find_package(catkin REQUIRED COMPONENTS
-  rospy
   roscpp
-  nodelet
-  cv_bridge
+  std_msgs
+  std_srvs
+  sensor_msgs
+  geometry_msgs
+  octomap_msgs
+  visualization_msgs
+  cmake_modules
+  tf
+  message_filters
+  octomap_ros
+  pcl_ros
+  pcl_conversions
 )
 
 ## System dependencies are found with CMake's conventions
@@ -120,8 +117,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include
- LIBRARIES image_stream_encoder image_stream_encoder_nodelet
+ INCLUDE_DIRS "include" "lib/humanoid_localization/include"
+ LIBRARIES localisation_models
  CATKIN_DEPENDS roscpp nodelet
 #  DEPENDS system_lib
 )
@@ -130,135 +127,62 @@ catkin_package(
 ## Build ##
 ###########
 
-
-
-
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-include_directories(
-  ${catkin_INCLUDE_DIRS})
-
-# Declare a C++ library
-add_library(image_stream_encoder
-  src/image_stream_encoder.cpp
+# set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/humanoid_localization/src)
+add_library(localisation_models
+  "lib/humanoid_localization/src/EndpointModel.cpp"
+  "lib/humanoid_localization/src/MapModel.cpp"
+  "lib/humanoid_localization/src/MotionModel.cpp"
+  "lib/humanoid_localization/src/RaycastingModel.cpp"
+  "lib/humanoid_localization/src/ObservationModel.cpp"
+  )
+set_target_properties(localisation_models PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(localisation_models PUBLIC
+${catkin_INCLUDE_DIRS}
+"lib/humanoid_localization/include"
 )
-target_include_directories(image_stream_encoder PUBLIC
-  ${OpenCV_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
-  include
-)
-target_link_libraries(image_stream_encoder 
+target_link_libraries(localisation_models
   ${catkin_LIBRARIES}
-  ${OpenCV_LIBS}
-  PkgConfig::LIBAV
 )
 
-add_library(image_stream_encoder_nodelet
- src/stream_encoder_nodelet.cpp)
 
-set_target_properties(image_stream_encoder_nodelet PROPERTIES LINKER_LANGUAGE CXX)
-
- target_include_directories(image_stream_encoder_nodelet PUBLIC
-   ${OpenCV_INCLUDE_DIRS}
-   ${catkin_INCLUDE_DIRS}
-   include
- )
-  target_link_libraries(image_stream_encoder_nodelet
-    image_stream_encoder
-    ${catkin_LIBRARIES}
-  )
-
+add_library(drone_localisation
+  "src/drone_localisation.cpp"
+  "src/localisation_node.cpp"
+)
+target_link_libraries(drone_localisation
+  ${catkin_LIBRARIES}
+  localisation_models
+)
+target_include_directories(drone_localisation PUBLIC
+  ${catkin_INCLUDE_DIRS}
+  "include"
+)
 
 
 
-  add_executable(image_stream_encoder_node src/image_stream_encoder.cpp)
-  target_include_directories(image_stream_encoder_node PUBLIC
-    ${OpenCV_INCLUDE_DIRS}
-    ${catkin_INCLUDE_DIRS}
-    include
-  )
-  target_link_libraries(image_stream_encoder_node
-    ${catkin_LIBRARIES}
-    ${OpenCV_LIBS}
-    image_stream_encoder
-  )
 
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-## Declare a C++ executable
-## With catkin_make all packages are built within a single CMake context
-## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/skyy_autoland_node.cpp)
 
-## Rename C++ executable without prefix
-## The above recommended prefix causes long target names, the following renames the
-## target back to the shorter version for ease of user use
-## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_executable(drone_localisation_nodelet
+  "src/localisation_nodelet.cpp"
+)
+target_include_directories(drone_localisation_nodelet PUBLIC
+  ${catkin_INCLUDE_DIRS}
+)
+target_link_libraries(drone_localisation_nodelet
+  ${catkin_LIBRARIES}
+  drone_localisation
+)
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+add_executable(drone_localisation_node
+  "src/localisation_node.cpp"
+)
+target_link_libraries(drone_localisation_node
+  ${catkin_LIBRARIES}
+  drone_localisation
+)
 
-#############
-## Install ##
-#############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/jetson_system_logger.py
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark executables for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-# install(TARGETS ${PROJECT_NAME}_node
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark libraries for installation
-## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-# install(TARGETS ${PROJECT_NAME}
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-# )
-
-## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
-
-## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
-
-#############
-## Testing ##
-#############
-
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_skyy_autoland.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+target_include_directories(drone_localisation_node PUBLIC
+  ${catkin_INCLUDE_DIRS}
+)
