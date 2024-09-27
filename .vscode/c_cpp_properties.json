@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/mq-sebastian/mq/autoland_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/mq-sebastian/mq/autoland_ws/src/drone_localisation/include/**",
+        "/home/mq-sebastian/mq/autoland_ws/src/mq_slam/humanoid_navigation/humanoid_localization/include/**",
+        "/home/mq-sebastian/mq/autoland_ws/src/ros-image-stream-encoder/include/**",
+        "/home/mq-sebastian/mq/autoland_ws/src/mq_avoidance/include/**",
+        "/home/mq-sebastian/mq/autoland_ws/src/mq_hw_interfaces/include/**",
+        "/home/mq-sebastian/mq/autoland_ws/src/jetson-nano-realsense-ros1/realsense2_camera/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
